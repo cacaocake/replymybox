@@ -1,9 +1,12 @@
 package com.ebaykorea.escrow.replymybox;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.ebaykorea.escrow.replymybox.service.LocationService;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -29,6 +32,8 @@ public class MainActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent serviceIntent = new Intent(this, LocationService.class);
+            this.startService(serviceIntent);
             return true;
         }
 
