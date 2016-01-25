@@ -5,6 +5,8 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.PowerManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -14,21 +16,30 @@ public class LocationAlarm extends BroadcastReceiver {
         super();
     }
 
+    private final String LOG_TAG = LocationAlarm.class.getSimpleName();
+
     @Override
     public void onReceive(Context context, Intent intent) {
         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "");
         wl.acquire();
 
-        // Put here YOUR code.
-        Toast.makeText(context, "Alarm !!!!!!!!!!", Toast.LENGTH_SHORT).show(); // For example
-        Log.i("LocationAlarm", "오오오옹!!");
+        // todo get location
+        Location location = getLocation(context);
+        if(location == null) {
+            Log.i(LOG_TAG, "getLocation() fail");
+        } else {
+            Log.i(LOG_TAG, "getLocation() " + location.getLatitude());
+            Log.i(LOG_TAG, "getLocation() " + location.getLongitude());
+        }
+
+
+        Log.i(LOG_TAG, "오오오옹!!");
         wl.release();
     }
 
-    public void setAlarm(Context context)
-    {
-        AlarmManager am =( AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+    public void setAlarm(Context context) {
+        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, LocationAlarm.class);
         PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent, 0);
         am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * 5, pi);
@@ -39,5 +50,24 @@ public class LocationAlarm extends BroadcastReceiver {
         PendingIntent sender = PendingIntent.getBroadcast(context, 0, intent, 0);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancel(sender);
+    }
+
+    private Location getLocation(Context context) {
+        Location location = null;
+
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        if (isNetworkEnabled) {
+            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        }
+
+        if (isGPSEnabled && location != null) {
+            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        }
+
+
+        return location;
     }
 }
