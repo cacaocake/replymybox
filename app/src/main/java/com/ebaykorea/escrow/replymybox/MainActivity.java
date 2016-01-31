@@ -3,10 +3,13 @@ package com.ebaykorea.escrow.replymybox;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.ebaykorea.escrow.replymybox.service.LocationService;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -32,11 +35,25 @@ public class MainActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Intent serviceIntent = new Intent(this, LocationService.class);
-            this.startService(serviceIntent);
+            //Intent serviceIntent = new Intent(this, LocationService.class);
+            //this.startService(serviceIntent);
+
+            IntentIntegrator integrator = new IntentIntegrator(MainActivity.this);
+            integrator.initiateScan();
+
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+        if (scanResult != null) {
+            String re = scanResult.getContents();
+            Log.d("code", re);
+        }
+        // else continue with any other code you need in the method
+
     }
 }
