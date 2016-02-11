@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="loopback-sdk-android-1.5.3">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.strongloop/loopback-sdk-android/1.5.3/1c3a833adf439e732978171080827c70fa51a89f/loopback-sdk-android-1.5.3.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.strongloop/loopback-sdk-android/1.5.3/91b7f233e08b294447a5b1ad604564a42c0aff19/loopback-sdk-android-1.5.3-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
