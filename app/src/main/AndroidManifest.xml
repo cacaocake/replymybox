@@ -29,6 +29,9 @@
             android:enabled="true"
             android:process=":location_service"/>
         <!--<receiver android:process=":remote" android:name=".service.LocationAlarm"></receiver>-->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCkycg8-U_5vD3nIANtzYouA8UPefk831U"/>
     </application>
 
 </manifest>
