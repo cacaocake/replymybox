@@ -13,6 +13,12 @@ import android.widget.TextView;
 import com.ebaykorea.escrow.replymybox.model.BoxModel;
 import com.ebaykorea.escrow.replymybox.model.BoxRepository;
 import com.ebaykorea.escrow.replymybox.service.LocationService;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.common.collect.ImmutableMap;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -28,6 +34,8 @@ import java.util.Date;
 public class MainActivity extends ActionBarActivity {
 
     private RestAdapter adapter;
+    static final LatLng SEOUL = new LatLng( 37.56, 126.97);
+    private GoogleMap map;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,9 +51,14 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
+        map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
+                .getMap();
+        Marker seoul = map.addMarker(new MarkerOptions().position(SEOUL)
+                .title("Seoul"));
 
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(SEOUL, 13));
 
-
+        map.animateCamera(CameraUpdateFactory.zoomTo(17), 2000, null);
 
     }
     public void scanBarcode() {
