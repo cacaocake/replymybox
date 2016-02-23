@@ -11,13 +11,19 @@ import android.os.PowerManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.ebaykorea.escrow.replymybox.rest.LocationInterface;
+
+import retrofit2.Retrofit;
+
+
 public class LocationAlarm extends BroadcastReceiver {
     public LocationAlarm() {
         super();
     }
 
     private final String LOG_TAG = LocationAlarm.class.getSimpleName();
-
+    private Retrofit retrofit;
+    private LocationInterface locationInterface;
     @Override
     public void onReceive(Context context, Intent intent) {
         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
@@ -38,11 +44,12 @@ public class LocationAlarm extends BroadcastReceiver {
         wl.release();
     }
 
-    public void setAlarm(Context context) {
+    public void setAlarm(Context context, String baseUrl) {
+
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, LocationAlarm.class);
         PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent, 0);
-        am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * 5, pi);
+        am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * 2, pi);
     }
 
     public void cancelAlarm(Context context) {

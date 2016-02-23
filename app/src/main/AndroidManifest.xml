@@ -34,6 +34,10 @@
             android:name=".service.LocationService"
             android:enabled="true"
             android:process=":location_service"/>
+        <service
+            android:name=".service.MapService"
+            android:enabled="true"
+            android:process=":map_service"/>
         <!--<receiver android:process=":remote" android:name=".service.LocationAlarm"></receiver>-->
         <meta-data
             android:name="com.google.android.geo.API_KEY"

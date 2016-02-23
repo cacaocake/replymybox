@@ -5,11 +5,10 @@ import com.strongloop.android.loopback.Model;
 /**
  * Created by cacao on 2016. 2. 18..
  */
-public class LocationModel extends Model {
+public class LocationModelRetrofit {
     private String memberid;
     private String date;
     private String longitude;
-    private String latitude;
 
     public String getMemberid() {
         return memberid;
@@ -42,5 +41,7 @@ public class LocationModel extends Model {
     public void setLatitude(String latitude) {
         this.latitude = latitude;
     }
+
+    private String latitude;
 
 }

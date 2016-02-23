@@ -25,7 +25,6 @@ import java.util.Date;
 
 public class LocationService extends Service implements LocationListener{
 
-    //private LocationAlarm locationAlarm = new LocationAlarm();
     private RestAdapter adapter;
 
     private final String LOG_TAG = LocationService.class.getSimpleName();
@@ -35,7 +34,7 @@ public class LocationService extends Service implements LocationListener{
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         setLocationListener();
-        //locationAlarm.setAlarm(this);
+
         return START_STICKY;
     }
 
@@ -104,7 +103,7 @@ public class LocationService extends Service implements LocationListener{
         if (adapter == null) {
 
             adapter = new RestAdapter(
-                    getApplicationContext(), getString(R.string.loopback_url));
+                    getApplicationContext(), getString(R.string.rest_end_point));
 
         }
         return adapter;
