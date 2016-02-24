@@ -162,36 +162,6 @@ public class MainActivity extends ActionBarActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap map) {
 
-
-        locationInterface = RestServiceGenerator.createService(LocationInterface.class);
-
-        HashMap<String, String> queryMap = new HashMap<String,String>();
-        queryMap.put("filter[where][memberid]", "cockroach419");
-        queryMap.put("filter[order]", "id%20DESC");
-        queryMap.put("filter[limit]", "10");
-
-        Call<List<LocationModelRetrofit>> call = locationInterface.listRepos(queryMap);
-        call.enqueue(new Callback<List<LocationModelRetrofit>>() {
-            @Override
-            public void onResponse(Call<List<LocationModelRetrofit>> call, Response<List<LocationModelRetrofit>> response) {
-                if (response.isSuccess()) {
-                    List<LocationModelRetrofit> locationList = response.body();
-                    for (LocationModelRetrofit location : locationList) {
-                        Log.d("box.save", location.getLongitude());
-                    }
-                } else {
-                    Log.d("box.save", "자료가 없네영...");
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<List<LocationModelRetrofit>> call, Throwable t) {
-                // something went completely south (like no internet connection)
-                Log.e("box.save", t.getMessage());
-            }
-        });
-
         googleMap = map;
         LatLng mapCenter = SEOUL;
 
@@ -206,7 +176,7 @@ public class MainActivity extends ActionBarActivity implements OnMapReadyCallbac
 
         CameraPosition cameraPosition = CameraPosition.builder()
                 .target(mapCenter)
-                .zoom(17)
+                .zoom(14)
                 .build();
 
         googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition),
@@ -215,6 +185,52 @@ public class MainActivity extends ActionBarActivity implements OnMapReadyCallbac
 
         locationMarker = marker;
 
+        getRecentLocations();
+    }
 
+    public void getRecentLocations(){
+        locationInterface = RestServiceGenerator.createService(LocationInterface.class);
+
+        HashMap<String, String> queryMap = new HashMap<String,String>();
+        queryMap.put("filter[where][memberid]", "cockroach419");
+        queryMap.put("filter[order]", "id DESC");
+        queryMap.put("filter[limit]", "10");
+
+        Call<List<LocationModelRetrofit>> call = locationInterface.listRepos(queryMap);
+        call.enqueue(new Callback<List<LocationModelRetrofit>>() {
+            @Override
+            public void onResponse(Call<List<LocationModelRetrofit>> call, Response<List<LocationModelRetrofit>> response) {
+                if (response.isSuccess()) {
+                    googleMap.clear();
+                    List<LocationModelRetrofit> locationList = response.body();
+                    //for (LocationModelRetrofit location : locationList) {
+                    for (int i = 0; i < locationList.size(); i++) {
+                        LocationModelRetrofit location = locationList.get(i);
+                        LatLng lo = new LatLng(Double.parseDouble(location.getLatitude()), Double.parseDouble(location.getLongitude()));
+
+                        googleMap.addMarker(new MarkerOptions()
+                                        //.icon(BitmapDescriptorFactory.fromResource(R.drawable.box48))
+                                        .title(location.getMemberid())
+                                        .snippet(location.getDate())
+                                        .icon(BitmapDescriptorFactory.defaultMarker(i * 360 / locationList.size()))
+                                        .position(lo)
+                        );
+                        Log.d("box.save", "latitude " + lo.latitude);
+                        Log.d("box.save", "longitude " + lo.longitude);
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lo, 13));
+
+                    }
+                } else {
+                    Log.d("box.save", "자료가 없네영...");
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<List<LocationModelRetrofit>> call, Throwable t) {
+                // something went completely south (like no internet connection)
+                Log.e("box.save", t.getMessage());
+            }
+        });
     }
 }

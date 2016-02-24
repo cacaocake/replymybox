@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">ReplyMyBox</string>
     <string name="action_settings">Settings</string>
+    <string name="action_client">Go Client</string>
     <string name="barcode_scan_button_text">스캔을 합시다</string>
     <string name="rest_end_point">http://ec2-52-79-92-220.ap-northeast-2.compute.amazonaws.com:3000/api</string>
 </resources>
