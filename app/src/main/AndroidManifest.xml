@@ -30,6 +30,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ClientActivity"
+            android:label="ClientVersion"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ebaykorea.escrow.replymybox.MainActivity"/>
+        </activity>
         <service
             android:name=".service.LocationService"
             android:enabled="true"
