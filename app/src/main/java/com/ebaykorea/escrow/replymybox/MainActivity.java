@@ -13,6 +13,8 @@ import android.widget.TextView;
 import com.ebaykorea.escrow.replymybox.model.BoxModel;
 import com.ebaykorea.escrow.replymybox.model.BoxRepository;
 import com.ebaykorea.escrow.replymybox.service.LocationService;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.common.collect.ImmutableMap;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -27,8 +29,8 @@ public class MainActivity extends ActionBarActivity {
 
     private RestAdapter adapter;
 
+    private static final String TAG = MainActivity.class.getName();
 
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -125,5 +127,7 @@ public class MainActivity extends ActionBarActivity {
         }
         return adapter;
     }
+
+
 
 }

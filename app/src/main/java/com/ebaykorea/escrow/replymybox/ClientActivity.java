@@ -1,9 +1,15 @@
 package com.ebaykorea.escrow.replymybox;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.ProgressBar;
 
 import com.ebaykorea.escrow.replymybox.model.BoxModel;
 import com.ebaykorea.escrow.replymybox.model.DeliveryModel;
@@ -12,6 +18,9 @@ import com.ebaykorea.escrow.replymybox.rest.BoxInterface;
 import com.ebaykorea.escrow.replymybox.rest.DeliveryInterface;
 import com.ebaykorea.escrow.replymybox.rest.LocationInterface;
 import com.ebaykorea.escrow.replymybox.rest.RestServiceGenerator;
+import com.ebaykorea.escrow.replymybox.service.GcmRegistrationService;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -41,6 +50,9 @@ public class ClientActivity extends ActionBarActivity implements OnMapReadyCallb
     private String memberid;
     static final LatLng SEOUL = new LatLng( 37.56, 126.97);
 
+    private static final String TAG = ClientActivity.class.getName();
+
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +73,9 @@ public class ClientActivity extends ActionBarActivity implements OnMapReadyCallb
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.client_map);
         mapFragment.getMapAsync(this);
+
+        registBroadcastReceiver();
+        getInstanceIdToken();
 
     }
 
@@ -91,7 +106,7 @@ public class ClientActivity extends ActionBarActivity implements OnMapReadyCallb
             public void onResponse(Call<List<BoxModel>> call, Response<List<BoxModel>> response) {
                 if (response.isSuccess()) {
                     List<BoxModel> boxList = response.body();
-                    if(boxList.size() > 0) {
+                    if (boxList.size() > 0) {
                         BoxModel model = boxList.get(0);
                         getRecentLocations(model.getMemberid());
                         memberid = model.getMemberid();
@@ -126,7 +141,7 @@ public class ClientActivity extends ActionBarActivity implements OnMapReadyCallb
                 if (response.isSuccess()) {
 
                     List<DeliveryModel> deliveryList = response.body();
-                    if(deliveryList.size() > 0) {
+                    if (deliveryList.size() > 0) {
                         DeliveryModel model = deliveryList.get(0);
                         getBox(model.getBoxid());
                         Log.d("getDelivery", "boxid : " + model.getBoxid());
@@ -208,4 +223,70 @@ public class ClientActivity extends ActionBarActivity implements OnMapReadyCallb
         }
         return adapter;
     }
+
+    private boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+                        9000).show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    public void registBroadcastReceiver(){
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+
+
+                if(action.equals(BroadcastActions.REGISTRATION_READY)){
+
+                } else if(action.equals(BroadcastActions.REGISTRATION_GENERATING)){
+
+                } else if(action.equals(BroadcastActions.REGISTRATION_COMPLETE)){
+                    String token = intent.getStringExtra("token");
+                    // todo : 토큰으로 뭘 합시당
+                    Log.d("token", token);
+                }
+
+            }
+        };
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                new IntentFilter(BroadcastActions.REGISTRATION_READY));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                new IntentFilter(BroadcastActions.REGISTRATION_GENERATING));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                new IntentFilter(BroadcastActions.REGISTRATION_COMPLETE));
+
+    }
+
+    /**
+     * 앱이 화면에서 사라지면 등록된 LocalBoardcast를 모두 삭제한다.
+     */
+    @Override
+    protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        super.onPause();
+    }
+
+    public void getInstanceIdToken() {
+        if (checkPlayServices()) {
+            // Start IntentService to register this application with GCM.
+            Intent intent = new Intent(this, GcmRegistrationService.class);
+            startService(intent);
+        }
+    }
+
 }
